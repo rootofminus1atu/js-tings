@@ -1,3 +1,9 @@
+/* 
+
+Task 1
+
+*/
+
 function processLoop() {
     alert("In function processLoop")
 
@@ -16,6 +22,12 @@ function processLoop() {
         }
     }
 }
+
+/* 
+
+Task 2
+
+*/
 
 function processIf() {
     alert("In function processIf")
@@ -57,6 +69,12 @@ function drawShapes() {
 
     document.write(`I think this is a reversed C <br> ${c} <br> K <br> ${k} <br> Y <br> ${y}`)
 }
+
+/* 
+
+Task 3 below
+
+*/
 
 function getC() {
     // I added <pre></pre> so that the spacing is consistent
