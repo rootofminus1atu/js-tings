@@ -64,8 +64,8 @@ function drawShapes() {
 
     // check getC for Task 3
     let c = getC()
-    let k = getK(block)
-    let y = getY(block)
+    let k = getK(block, 21)
+    let y = getY(block, 25)
 
     document.write(`I think this is a reversed C <br> ${c} <br> K <br> ${k} <br> Y <br> ${y}`)
 }
@@ -116,9 +116,8 @@ Task 4 below
 
 */
 
-function getK(block) {
+function getK(block, size) {
     let str = "<pre>"
-    const size = 7
 
     for (let i = 0; i < size; i++) {
         let middleAmount = Math.abs(Math.floor(size / 2) - i)
@@ -134,10 +133,8 @@ function getK(block) {
     return str
 }
 
-function getY(block) {
+function getY(block, size) {
     let str = "<pre>"
-    
-    const size = 7;
     
     for (let i = 0; i < size; i++) {
         let sideAmount = i;
