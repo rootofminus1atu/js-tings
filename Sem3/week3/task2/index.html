@@ -3,23 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
 <body>
     <h1>Task 2</h1>
     <p>Create a HTML file which has a div and a h1 and a button. When the mouse is moved away from the button make 4 style changes to the div. When the button is clicked, make three style changes to the h1.</p>
-        
-    <div class="hobbies">
-        <h3>Hobbies</h3>
-        Programming<input type="checkbox" name="hobby" value="Programming" /> <br/>
-        Facebook<input type="checkbox" name="hobby" value="Facebook"/> <br/>
-        Travel<input type="checkbox" name="hobby" value="Travel"/> <br/>
-        Reading<input type="checkbox" name="hobby" value="Reading"/> <br/>
-        Other<input type="checkbox" name="hobby" value="Other"/> <br/><br/>
-
-        <button onclick='processHobbies()'>List Hobbies</button>
-        <div id="result"></div>
-    </div>
+    
+    <div id="the-div">crab</div>
+    <h1 id="the-h1">this is an h1</h1>
+    <button id="the-button" onmouseleave="divStyleChange()" onclick="h1StyleChange()">Hover over me</button>
 
     <script src="script.js"></script>
 </body>

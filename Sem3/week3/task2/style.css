@@ -1,0 +1,50 @@
+
+button {
+    padding: 1rem 2rem;
+}
+
+#the-div {
+    width: 200px;
+    height: 200px;
+    border: 2px solid black;
+    border-radius: 1rem;
+    animation: none;
+
+    background-image: url("images/crab-calm.webp");
+    background-size: cover;
+    background-position: center;
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+
+    justify-content: center;
+    align-items: center;
+}
+  
+@keyframes glow-animation {
+    0% {
+        box-shadow: 0 0 1rem 0.2rem red;
+    }
+    14.29% {
+        box-shadow: 0 0 1rem 0.2rem orange;
+    }
+    28.57% {
+        box-shadow: 0 0 1rem 0.2rem yellow;
+    }
+    42.86% {
+        box-shadow: 0 0 1rem 0.2rem rgb(0, 255, 0);
+    }
+    57.14% {
+        box-shadow: 0 0 1rem 0.2rem blue;
+    }
+    71.43% {
+        box-shadow: 0 0 1rem 0.2rem rgb(149, 0, 255);
+    }
+    85.71% {
+        box-shadow: 0 0 1rem 0.2rem rgb(255, 0, 255);
+    }
+    100% {
+        box-shadow: 0 0 1rem 0.2rem red;
+    }
+}
