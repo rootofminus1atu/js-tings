@@ -11,9 +11,10 @@ const myDoc = {
             },  // issue: can't have multiple elements like this in 1 obj
             li: {
                 p: "page 2"
-            }
-        }
-    }
+            },
+        },
+    },
+    input: "this is input?" // not working for single tag elements
 
 }
 
