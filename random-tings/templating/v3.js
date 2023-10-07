@@ -103,3 +103,5 @@ const htmlStructure = buildHTML(myDoc);
 htmlStructure.forEach(element => {
     root.appendChild(element);
 });
+
+
