@@ -35,8 +35,10 @@ class Computed {
     isStale
 
     constructor(computeFn) {
+        console.log(`Creating Computed with ${computeFn}`)
         this.computeFn = computeFn
         this.isStale = true
+        console.log(this)
         runAndExtractDependencies(this)
     }
 
@@ -77,8 +79,11 @@ class Effect {
 let RUNNING = null
 
 function runAndExtractDependencies(task) {
+    console.log(`The task: ${RUNNING}`)
     RUNNING = task
+    console.log(`The task after assigning: ${RUNNING}`)
     task.execute()
+    console.log(`The task after executing `)
     RUNNING = null
 }
 
@@ -102,6 +107,37 @@ button.innerHTML = "+1"
 button.addEventListener("click", () => {
     counter.value += 1
 })
+
+
+
+
+let anotherCounter = new Signal(5)
+let tripleAnotherCounter = new Computed(() => anotherCounter.value * 3)
+
+const h2 = document.createElement("h2")
+document.body.append(h2)
+
+new Effect(() => {
+    h2.innerHTML = `${anotherCounter.value} x 3 = ${tripleAnotherCounter.value}`
+})
+
+const button2 = document.createElement("button")
+document.body.append(button2)
+button2.innerHTML = "+1"
+
+button2.addEventListener("click", () => {
+    anotherCounter.value += 1
+})
+
+
+
+
+function createReactiveCounter() {
+    const h3 = document.createElement("h3")
+    const button = document.createElement("button")
+
+    
+}
 
 
 
