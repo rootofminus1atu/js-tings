@@ -1,34 +1,5 @@
 console.log("hi")
 
-const canvas = document.getElementById("my-canvas")
-const ctx = canvas.getContext("2d")
-
-ctx.moveTo(0, 0)
-ctx.lineTo(200, 100)
-ctx.stroke()
-
-ctx.beginPath()
-ctx.arc(95, 50, 40, 0, 2 * Math.PI)
-ctx.stroke()
-
-ctx.beginPath()
-ctx.arc(0, 0, 30, 0, 2 * Math.PI)
-ctx.stroke()
-
-const p = (x, y) => ({ x: x, y: y });
-
-function createLine(ctx, from, to) {
-    ctx.moveTo(from.x, from.y)
-    ctx.lineTo(to.x, to.y)
-    ctx.stroke()
-}
-
-console.log(p(200, 50))
-
-createLine(ctx, p(0, 0), p(300, 50))
-
-
-
 
 
 function rangeContainingCenter(min, max, step) {
@@ -58,42 +29,75 @@ class P {
     move(dx, dy) {
         return new P(this.x + dx, this.y - dy)
     }
+
+    distance(other) {
+        return Math.sqrt(Math.pow(this.x - other.x, 2) + Math.pow(this.y - other.y, 2))
+    }
+
+    slope(other) {
+        return (-1) * (this.y - other.y) / (this.x - other.x)
+    }
+}
+
+class CanvasWindow {
+    constructor(width, height) {
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.width = width;
+        this.height = height;
+        this.canvas.style.border = '2px solid black';
+        this.ctx = this.canvas.getContext("2d");
+    }
+
+    // these below belong to the canvas border
+    get left() {
+        return new P(0, this.height / 2);
+    }
+
+    get right() {
+        return new P(this.width, this.height / 2);
+    }
+
+    get up() {
+        return new P(this.width / 2, 0);
+    }
+
+    get down() {
+        return new P(this.width / 2, this.height);
+    }
+
+    get globalCenter() {
+        return new P(this.canvas.width / 2, this.canvas.height / 2);
+    }
+
+    appendTo(element) {
+        element.append(this.canvas);
+    }
 }
 
 
-class Canvas {
-    constructor(width, height, unit) {
-        this.canvas = document.createElement("canvas");
-        this.ctx = this.canvas.getContext("2d");
-        this.canvas.width = width;
-        this.width = width
-        this.canvas.height = height;
-        this.height = height
-        this.canvas.style.border = '2px solid black';
+class CoordinateSystem {
+    // maybe 2 basis points instead
+    constructor(canvasWindow, unit, basisX, basisY, centerAlt) {
+        this.canvasWindow = canvasWindow
+        this.ctx = canvasWindow.ctx
 
-        this.unit = unit;  // how many pixels for a single cell
+        this.unit = unit  // how many pixels for a single cell
+        this.center = centerAlt || canvasWindow.globalCenter
+        this.basisX = this.center.move(unit * basisX.x, unit * basisX.y)
+        this.basisY = this.center.move(unit * basisY.x, unit * basisY.y)
+        // by default center would be at the center of the canvasWindow
+
+        this.originalBasisX = basisX
+        this.originalBasisY = basisY
+
         this.default_color = "black";
         this.default_line_width = 1
     }
 
-    get center() {
-        return new P(this.canvas.width / 2, this.canvas.height / 2);
-    }
-
-    get left() {
-        return new P(0, this.canvas.height / 2);
-    }
-
-    get right() {
-        return new P(this.canvas.width, this.canvas.height / 2);
-    }
-
-    get up() {
-        return new P(this.canvas.width / 2, 0);
-    }
-
-    get down() {
-        return new P(this.canvas.width / 2, this.canvas.height);
+    clear() {
+        this.ctx.clearRect(0, 0, this.canvasWindow.width, this.canvasWindow.height);
     }
 
     drawLine(from, to, color, line_width) {
@@ -110,41 +114,85 @@ class Canvas {
     }
 
     drawXYaxes() {
-        this.drawLine(this.left, this.right, "blue");
-        this.drawLine(this.down, this.up, "blue");
+        this.drawMXplusB(this.center.slope(this.basisX), 0, null, 1.5 * this.default_line_width)
+        this.drawMXplusB(this.center.slope(this.basisY), 0, null, 1.5 * this.default_line_width)
     }
 
     drawLattice() {
-        const xs = rangeContainingCenter(this.left.x, this.right.x, this.unit);
-        xs.forEach(x => this.drawLine(new P(x, this.down.y), new P(x, this.up.y)));
+        const color = "rgba(0, 0, 0, 0.5)"
+                
+        const xs = rangeContainingCenter(this.canvasWindow.left.x, this.canvasWindow.right.x, this.unit);
+        xs.forEach(x => this.drawLine(new P(x, this.canvasWindow.down.y), new P(x, this.canvasWindow.up.y), color));
 
-        const ys = rangeContainingCenter(this.up.y, this.down.y, this.unit);
-        ys.forEach(y => this.drawLine(new P(this.left.x, y), new P(this.right.x, y)));
+        const ys = rangeContainingCenter(this.canvasWindow.up.y, this.canvasWindow.down.y, this.unit);
+        ys.forEach(y => this.drawLine(new P(this.canvasWindow.left.x, y), new P(this.canvasWindow.right.x, y), color));
+    }
+
+    setBasisVecs(basisX, basisY) {
+        this.basisX = this.center.move(this.unit * basisX.x, this.unit * basisX.y)
+        this.basisY = this.center.move(this.unit * basisY.x, this.unit * basisY.y)
     }
 
     drawBasisVecs() {
-        const bigger = 2 * this.default_line_width
-        this.drawLine(this.center, this.center.move(0, this.unit), "red", bigger)
-        this.drawLine(this.center, this.center.move(this.unit, 0), "blue", bigger)
+        const bigger = 3 * this.default_line_width
+        this.drawLine(this.center, this.basisX, "red", bigger)
+        this.drawLine(this.center, this.basisY, "blue", bigger)
     }
 
-    drawMX(m) {
-        const bigger = 2 * this.default_line_width
+    drawMXplusB(m, b, color, width) {
+        m ??= 0
+        b ??= 0
 
-        // calculate points on the border
-        const start = new P(this.left.x, m * this.up.y - this.height / 2)
-        const end = new P(this.right.x, 0.5 *  m * this.up.y - this.height / 2)
-        console.log(start, end)
-        // I need a better coordinate system this is so bad
+        const xmovl = this.center.distance(this.canvasWindow.left)
+        const xmovr = this.center.distance(this.canvasWindow.right)
 
-        // draw line between them
-        this.drawLine(start, end, "green", bigger)
+        // ig this works for relative coords
+        const start = this.center.move(-xmovl, m * (-xmovl) + b * this.unit)
+        const end = this.center.move(xmovr, m * xmovr + b * this.unit)
+
+        this.drawLine(start, end, color, width)
     }
 }
 
-const c = new Canvas(200, 200, 40);
-c.drawXYaxes();
-c.drawLattice();
-c.drawBasisVecs();
-c.drawMX(2)
-document.body.append(c.canvas);
+const cw = new CanvasWindow(200, 200)
+cw.appendTo(document.body)
+
+const cs = new CoordinateSystem(cw, 20, new P(1, 0), new P(0, 1))
+cs.drawLattice()
+cs.drawXYaxes()
+cs.drawBasisVecs()
+
+function lerpStep(start, end, howMany, i) {
+    return (i * (end - start) / howMany + start)
+}
+
+async function animate(cs, endBasisX, endBasisY) {
+    const startBasisX = new P(cs.originalBasisX.x, cs.originalBasisX.y)
+    const startBasisY = new P(cs.originalBasisY.y, cs.originalBasisY.y)
+
+    const totalTime = 1 // in seconds
+    const howMany = 40
+    for (let i = 1; i <= howMany; i++) {
+        cs.clear()
+
+        console.log(`from ${startBasisX.x} to ${endBasisX.x}`)
+        const x1 = lerpStep(startBasisX.x, endBasisX.x, howMany, i)
+        const y1 = lerpStep(startBasisX.y, endBasisX.y, howMany, i)
+        const x2 = lerpStep(startBasisY.x, endBasisY.x, howMany, i)
+        const y2 = lerpStep(startBasisY.y, endBasisY.y, howMany, i)
+        console.log(x1, y1)
+
+        cs.setBasisVecs(new P(x1, y1), new P(x2, y2))
+        cs.drawLattice()
+        cs.drawXYaxes()
+        cs.drawBasisVecs()
+        await new Promise(resolve => setTimeout(resolve, totalTime / howMany * 1000));
+
+    }
+}
+
+
+
+function buttonThing() {
+    animate(cs, new P(3, 1), new P(-2, 2))
+}
