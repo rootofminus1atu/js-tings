@@ -1,91 +1,30 @@
-class Signal {
-    _value
-    dependencies
+// Define an initial state
+let state = {
+    count: 0,
+};
 
-    constructor(initValue) {
-        this.dependencies = new Set()
-        this._value = initValue
-    }
-
-    get value() {
-        if (RUNNING) {
-            this.dependencies.add(RUNNING)
-        }
-        return this._value
-    }
-
-    set value(newValue) {
-        if (this._value === newValue) {
-            return
-        }
-        this._value = newValue
-        this.notify()
-    }
-
-    notify() {
-        for (const dependency of this.dependencies) {
-            dependency.update()
-        }
-    }
+// Function to update the state and trigger a re-render
+function updateState(newState) {
+    console.log(getCount())
+    console.log(state)
+    state = { ...state, ...newState };
+    render()
 }
 
-class Computed {
-    _value
-    computeFn
-    isStale
-
-    constructor(computeFn) {
-        console.log(`Creating Computed with ${computeFn}`)
-        this.computeFn = computeFn
-        this.isStale = true
-        console.log(this)
-        runAndExtractDependencies(this)
-    }
-
-    get value() {
-        if (this.isStale) {
-            this._value = this.computeFn()
-            this.isStale = false
-        }
-        return this._value
-    }
-
-    execute() {
-        this.computeFn()
-    }
-
-    update() {
-        this.isStale = true
-    }
+// Function to create a signal that updates the state
+function createSignal(initialValue) {
+    let value = initialValue;
+    return [
+        () => value,
+        (newValue) => {
+            value = newValue;
+            updateState(newValue); // Trigger a re-render when the signal changes
+        },
+    ];
 }
 
-class Effect {
-    effectFn
-
-    constructor(effectFn) {
-        this.effectFn = effectFn
-        runAndExtractDependencies(this)
-    }
-
-    execute() {
-        this.effectFn()
-    }
-
-    update() {
-        this.execute()
-    }
-}
-
-let RUNNING = null
-
-function runAndExtractDependencies(task) {
-    console.log(`The task: ${RUNNING}`)
-    RUNNING = task
-    console.log(`The task after assigning: ${RUNNING}`)
-    task.execute()
-    console.log(`The task after executing `)
-    RUNNING = null
-}
+// Create a signal for the count
+const [getCount, setCount] = createSignal(8);
 
 // Creates an HTML element from the JSON data
 function createElement(elementData) {
@@ -156,7 +95,9 @@ function myElem() {
                     onclick: 'setCount(getCount() + 1)'
                 },
                 children: [
-                    `count is 2`
+                    {
+                        text: `count is ${getCount()}`,
+                    },
                 ],
             },
         ],
