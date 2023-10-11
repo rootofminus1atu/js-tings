@@ -1,0 +1,150 @@
+console.log("hi")
+
+const canvas = document.getElementById("my-canvas")
+const ctx = canvas.getContext("2d")
+
+ctx.moveTo(0, 0)
+ctx.lineTo(200, 100)
+ctx.stroke()
+
+ctx.beginPath()
+ctx.arc(95, 50, 40, 0, 2 * Math.PI)
+ctx.stroke()
+
+ctx.beginPath()
+ctx.arc(0, 0, 30, 0, 2 * Math.PI)
+ctx.stroke()
+
+const p = (x, y) => ({ x: x, y: y });
+
+function createLine(ctx, from, to) {
+    ctx.moveTo(from.x, from.y)
+    ctx.lineTo(to.x, to.y)
+    ctx.stroke()
+}
+
+console.log(p(200, 50))
+
+createLine(ctx, p(0, 0), p(300, 50))
+
+
+
+
+
+function rangeContainingCenter(min, max, step) {
+    const numbers = []
+    const center = (max - min) / 2
+
+    for (let num = center; num <= max; num += step) {
+        numbers.push(num)
+    }
+
+    for (let num = center; num >= min; num -= step) {
+        numbers.push(num)
+    }
+
+    numbers.sort((a, b) => a - b)
+
+    return numbers
+}
+
+
+class P {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    move(dx, dy) {
+        return new P(this.x + dx, this.y - dy)
+    }
+}
+
+
+class Canvas {
+    constructor(width, height, unit) {
+        this.canvas = document.createElement("canvas");
+        this.ctx = this.canvas.getContext("2d");
+        this.canvas.width = width;
+        this.width = width
+        this.canvas.height = height;
+        this.height = height
+        this.canvas.style.border = '2px solid black';
+
+        this.unit = unit;  // how many pixels for a single cell
+        this.default_color = "black";
+        this.default_line_width = 1
+    }
+
+    get center() {
+        return new P(this.canvas.width / 2, this.canvas.height / 2);
+    }
+
+    get left() {
+        return new P(0, this.canvas.height / 2);
+    }
+
+    get right() {
+        return new P(this.canvas.width, this.canvas.height / 2);
+    }
+
+    get up() {
+        return new P(this.canvas.width / 2, 0);
+    }
+
+    get down() {
+        return new P(this.canvas.width / 2, this.canvas.height);
+    }
+
+    drawLine(from, to, color, line_width) {
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = line_width;
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(from.x, from.y);
+        this.ctx.lineTo(to.x, to.y);
+        this.ctx.stroke();
+
+        this.ctx.strokeStyle = this.default_color;
+        this.ctx.lineWidth = this.default_line_width
+    }
+
+    drawXYaxes() {
+        this.drawLine(this.left, this.right, "blue");
+        this.drawLine(this.down, this.up, "blue");
+    }
+
+    drawLattice() {
+        const xs = rangeContainingCenter(this.left.x, this.right.x, this.unit);
+        xs.forEach(x => this.drawLine(new P(x, this.down.y), new P(x, this.up.y)));
+
+        const ys = rangeContainingCenter(this.up.y, this.down.y, this.unit);
+        ys.forEach(y => this.drawLine(new P(this.left.x, y), new P(this.right.x, y)));
+    }
+
+    drawBasisVecs() {
+        const bigger = 2 * this.default_line_width
+        this.drawLine(this.center, this.center.move(0, this.unit), "red", bigger)
+        this.drawLine(this.center, this.center.move(this.unit, 0), "blue", bigger)
+    }
+
+    drawMX(m) {
+        const bigger = 2 * this.default_line_width
+
+        // calculate points on the border
+        const start = new P(this.left.x, m * this.up.y - this.height / 2)
+        const end = new P(this.right.x, 0.5 *  m * this.up.y - this.height / 2)
+        console.log(start, end)
+        // I need a better coordinate system this is so bad
+
+        // draw line between them
+        this.drawLine(start, end, "green", bigger)
+    }
+}
+
+const c = new Canvas(200, 200, 40);
+c.drawXYaxes();
+c.drawLattice();
+c.drawBasisVecs();
+c.drawMX(2)
+document.body.append(c.canvas);
