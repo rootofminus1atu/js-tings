@@ -6,7 +6,6 @@ function processHobbies() {
         .map(elem => elem.value)
 
     displayHobbies(hobbies)
-
 }
 
 
