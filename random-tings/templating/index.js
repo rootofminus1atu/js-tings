@@ -1,78 +1,129 @@
-// Creates an HTML element from the JSON data
-function createElement(elementData) {
-    const element = document.createElement(elementData.tag);
+class Signal {
+    constructor(value) {
+        this._value = value;
+        this._subscribers = new Set(); // Track subscribers (components/elements)
+    }
 
-    if (elementData.props) {
-        for (const propName in elementData.props) {
-            element.setAttribute(propName, elementData.props[propName]);
+    get value() {
+        // When the value is accessed, track the dependency.
+        if (currentComponent) {
+            this._subscribers.add(currentComponent);
+        }
+        return this._value;
+    }
+
+    set value(newValue) {
+        if (this._value !== newValue) {
+            this._value = newValue;
+            // Trigger updates for all subscribers.
+            this._subscribers.forEach((subscriber) => subscriber.update());
+        }
+    }
+}
+
+let currentComponent = null;
+
+class Component {
+    constructor(renderFunction) {
+        this.render = renderFunction;
+        this.update(); // Initial render and subscription to Signals
+    }
+
+    update() {
+        currentComponent = this;
+        this._element = this.render();
+        currentComponent = null;
+    }
+
+    getElement() {
+        return this._element;
+    }
+}
+
+// Custom createElement function
+function createElement(tag, props, ...children) {
+    const element = document.createElement(tag);
+
+    if (props) {
+        for (const [propName, prop] of Object.entries(props)) {
+            if (propName === "events" && typeof prop === "object") {
+                // Handle event properties
+                for (const [eventName, eventCallback] of Object.entries(prop)) {
+                    element.addEventListener(eventName, eventCallback);
+                }
+            } else {
+                element.setAttribute(propName, prop);
+            }
         }
     }
 
-    if (elementData.text) {
-        const textNode = document.createTextNode(elementData.text);
-        element.appendChild(textNode);
-    }
-
-    if (elementData.children) {
-        elementData.children.forEach((childData) => {
-            const newElem = createElement(childData);
-            element.appendChild(newElem);
+    if (children) {
+        children.forEach(child => {
+            if (typeof child === 'string') {
+                element.appendChild(document.createTextNode(child));
+            } else if (child instanceof Element) {
+                element.appendChild(child);
+            } else if (child instanceof Node) {
+                element.appendChild(child);
+            }
         });
     }
 
     return element;
 }
 
-// Builds the HTML tree from the JSON data provided as the argument
-function buildHTML(...data) {
-    return data.map((item) => createElement(item));
+// Your code
+function myElem() {
+    return new Component(() => {
+        let count = new Signal(0);
+        return {
+            tag: "div",
+            children: [
+                {
+                    tag: 'button',
+                    events: {
+                        click: () => {
+                            count.value++;
+                        }
+                    },
+                    children: [
+                        "click me"
+                    ]
+                },
+                myDisplay(count).render()
+            ],
+        };
+    });
 }
 
-// Helper function to erase everything inside an element
-function killChildren(element) {
-    while (element.firstChild) {
-        element.removeChild(element.firstChild);
-    }
-}
-
-// Wrapper to make appending data more convenient
-function appendDataToElement(element, ...data) {
-    element.append(...buildHTML(...data));
-}
-
-// Wrapper to make setting data more convenient
-function setDataToElement(element, ...data) {
-    killChildren(element);
-    element.append(...buildHTML(...data));
-}
-
-// Render the UI based on the current state
-function render() {
-    setDataToElement(root, myElem());
+function myDisplay(countSignal) {
+    return new Component(() => {
+        return {
+            tag: 'h1',
+            children: [
+                `The count is `,
+                countSignal.value
+            ]
+        };
+    });
 }
 
 const root = document.getElementById("root");
 
-function myElem() {
-    return {
-        tag: "div",
-        props: {
-            class: "hi-class",
-        },
-        children: [
-            {
-                tag: "button",
-                props: {
-                    id: "count-button",
-                    onclick: 'setCount(getCount() + 1)'
-                },
-                children: [
-                    `count is 2`
-                ],
-            },
-        ],
-    };
+function render2() {
+    const component = myElem();
+    const element = component.getElement();
+
+    console.log(component)
+    console.log(element)
+
+    // Clear the root element
+    while (root.firstChild) {
+        root.removeChild(root.firstChild);
+    }
+
+    // Append the new element
+    root.appendChild(element);
 }
 
-// Initial render
-render();
+render2();
