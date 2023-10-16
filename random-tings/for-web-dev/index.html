@@ -7,25 +7,33 @@
 </head>
 <body>
 
-    <div id="clubs">
 
-        <div class="my-club-class">
-            <h2>name</h2>
-            <p>description</p>
+
+    <div class="templatize" json-list="clubs">
+
+        <div class="my-club-class" id={id}>
+            <h2>name is {name}</h2>
+            <p>{description}</p>
         </div>
 
     </div>
 
-    <!--
-    <div id="products">
+
+    
+
+    <div class="templatize" json-list="products">
 
         <div>
-            <h2>name</h2>
-            <p>price</p>
+            <h2>Product: {name}</h2>
+            <p>costs {price} euro</p>
         </div>
 
     </div>
-    -->
+
+    <div class="templatize" json-list="huh">
+        <h3>{light.name}</h3>
+        <h4>{dark.name}</h4>
+    </div>
     
 
     
