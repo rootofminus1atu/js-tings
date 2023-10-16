@@ -9,34 +9,19 @@
 
 
 
-    <div class="templatize" json-list="clubs">
-
-        <div class="my-club-class" id={id}>
-            <h2>name is {name}</h2>
-            <p>{description}</p>
-        </div>
-
-    </div>
-
-
-    
-
     <div class="templatize" json-list="products">
 
-        <div>
-            <h2>Product: {name}</h2>
-            <p>costs {price} euro</p>
+        <div class="my-club-class">
+            <h2>name is {name}</h2>
+            <p>{price}</p>
         </div>
 
-    </div>
-
-    <div class="templatize" json-list="huh">
-        <h3>{light.name}</h3>
-        <h4>{dark.name}</h4>
     </div>
     
 
     
     <script src="script.js"></script>
+    <script type="module" src="templatize.js"></script>
+    
 </body>
 </html>
