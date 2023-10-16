@@ -33,6 +33,9 @@ products = [
     },
 ]
 
+// todo: 
+// make it work for lists of nested objects
+
 huh = [
     {
         light: {
