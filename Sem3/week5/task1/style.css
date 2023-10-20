@@ -1,0 +1,15 @@
+#root {
+    background-color: red;
+}
+
+.new-div {
+    background-color: green;
+    width: 400px;
+    height: 150px;
+}
+
+.new-p {
+    background-color: cyan;
+    font-size: 32px;
+    border: 2px red dashed;
+}
