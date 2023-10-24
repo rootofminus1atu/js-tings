@@ -1,0 +1,8 @@
+https://stackoverflow.com/questions/58464028/how-to-make-canvas-drawing-always-center
+https://stackoverflow.com/questions/55202425/how-to-centre-align-my-line-drawing-using-canvas
+https://stackoverflow.com/questions/63134009/fabricjs-object-coordinates-relative-to-an-image-instead-of-whole-canvas#:~:text=I%20think%20toLocalPoint%20%28%29%20might%20help.%20Given%20an,%3D%20imageObj.toLocalPoint%20%28point%2C%20%27left%27%2C%20%27top%27%29%20console.log%20%28rel.x%2C%20rel.y%29
+http://fabricjs.com/
+https://konvajs.org/
+https://stackoverflow.com/questions/38999034/how-does-transforming-points-with-a-transformmatrix-work-in-fabricjs
+https://konvajs.org/docs/react/index.html
+https://github.com/fabricjs/fabric.js
