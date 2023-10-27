@@ -1,0 +1,13 @@
+.six-styles {
+    background-color: red;
+    color: greenyellow;
+    letter-spacing: 0.75rem;
+    font-size: 200%;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    padding: 1rem;
+}
+
+.two-styles {
+    transform: rotate(10deg);
+    opacity: 20%;
+}
