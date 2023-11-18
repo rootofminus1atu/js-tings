@@ -1,73 +1,71 @@
 
 const url = "https://restcountries.com/v3.1/all"
 
+
 function processCurrencies(currencies) {
     if (!currencies) {
-        return null
+        return []
     }
 
-    const currencySymbols = Object.entries(currencies)
+    const currenciesList = Object.entries(currencies)
 
-    if (!currencySymbols) {
-        return null
-    }
+    const currenciesProcessed = currenciesList.map((c) => {
+        const [code, details] = c
 
-    const [code, details] = currencySymbols[0]
+        return {
+            name: details.name,
+            symbol: details.symbol,
+            code
+        }
+    })
 
-    if (!details) {
-        return null
-    }
-
-    return { 
-        ...details,
-        code
-    }
+    return currenciesProcessed
 }
 
-async function getCountryData() {
+async function getCountriesData() {
     try {
         const res = await fetch(url)
-        const data = await res.json()
+        const json = await res.json()
 
-        const info = data.map((country) => {
-            const currency = processCurrencies(country.currencies)
+        const data = json.map((country) => {
+            const currencies = processCurrencies(country.currencies)
 
             return {
                 name: country.name.official,
                 flag: country.flags.png,
                 flagAlt: country.flags.alt,
-                currency: currency,  // could be null
+                currencies: currencies,  // is a list
                 landlocked: country.landlocked,
                 region: country.region,
                 subRegion: country.subregion
             }
         })
 
-        return info
+        return data
 
     } catch(error) {
         console.error(error)
     }
 }
 
-function createSpecialPara(title, value) {
+function createTitledPara(title, value) {
     const p = document.createElement('p')
     p.innerHTML = `<b>${title}</b>: ${value}`
     return p
 }
 
 function displayCountryData(data) {
-    const allCardsContainer = document.getElementById('cards-container')
-    
-    data.map((country) => {
+    const cards = data.map((country) => {
         // all elements that will be in the card
         const title = document.createElement('h1')
         title.innerText = country.name
 
-        const currencyP = createSpecialPara("Currency", country.currency ? country.currency.name : "NO DATA")
-        const landlockedP = createSpecialPara("Landlocked", country.landlocked)
-        const regionP = createSpecialPara("Region", country.region)
-        const subRegionP = createSpecialPara("Sub-Region", country.subRegion)
+        const currenciesStr = country.currencies.map(curr => curr.name).join(', ')
+
+        const currencyP = createTitledPara("Currencies", currenciesStr)
+        const landlockedP = createTitledPara("Landlocked", country.landlocked)
+        const regionP = createTitledPara("Region", country.region)
+        const subRegionP = createTitledPara("Sub-Region", country.subRegion)
 
         const flag = document.createElement('img')
         flag.src = country.flag
@@ -85,8 +83,11 @@ function displayCountryData(data) {
         card.classList.add("card")
         card.append(cardHeader, currencyP, landlockedP, regionP, subRegionP)
 
-        allCardsContainer.append(card)
+        return card
     })
+
+    const allCardsContainer = document.getElementById('cards-container')
+    allCardsContainer.append(...cards)
 }
 
-displayCountryData(await getCountryData())
+displayCountryData(await getCountriesData())
