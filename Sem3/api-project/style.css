@@ -1,0 +1,15 @@
+#composers-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.composer-card {
+    border: 2px solid green;
+}
+
+.composer-card img {
+    clip-path: ellipse(40px 50px at 50px 50px);
+    display: block;
+}
