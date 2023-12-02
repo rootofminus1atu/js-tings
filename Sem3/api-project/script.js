@@ -4,21 +4,36 @@ function url(endpoint) {
     return `${BASE}${endpoint}`
 }
 
-// this works????
-// const res = await fetch(url("/composer/list/rec.json"))
-// console.log(await res.json())
+
+const btn = document.createElement('button')
+btn.innerText = "click"
+btn.addEventListener('click', () => {
+    document.getElementById('composer-details').classList.add('details-open')
+})
+document.body.append(btn)
+
+
 
 async function getComposers() {
-    const res = await fetch(url("/composer/list/pop.json"))
+    const endpoint = url("/composer/list/pop.json")
+    // add TRY CATCH here
+    const res = await fetch(endpoint)
+    // add IF !res.ok here
     const json = await res.json()
 
     return json.composers
 }
 
+async function getWorks(composerId) {
+    const endpoint = url(`/work/list/composer/${composerId}/genre/Popular.json`)
 
-function dce(str) {
-    return document.createElement(str)
+    // add try catch too or abstract this into a fetch function
+    const res = await fetch(endpoint)
+    const json = await res.json()
+
+    return json.works
 }
+
 
 
 function composerCard(composer) {
@@ -35,7 +50,17 @@ function composerCard(composer) {
 
     const a = document.createElement('a')
     a.setAttribute('href', 'https://www.example.com');
-    a.innerText = "see works"
+    a.innerText = "read more"
+    a.onclick = async (e) => {
+        e.preventDefault()
+
+        // resize screen
+        // start fetching and display a loading spinner
+        // then display the works and other stuff 
+
+        const works = await getWorks(composer.id)
+        console.log(works)
+    } 
 
     div.append(h1, img, a)
 

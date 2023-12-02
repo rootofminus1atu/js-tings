@@ -1,9 +1,26 @@
+body {
+    margin: 0;
+}
+
 #composers-container {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
+    flex: 1;
 }
+
+#composer-details {
+    border: 2px solid red;
+    width: 0;
+    overflow: hidden; 
+    transition: width 0.3s ease;
+}
+
+.details-open {
+    width: 70% !important;
+}
+
 
 .composer-card {
     border: 2px solid green;
@@ -12,4 +29,8 @@
 .composer-card img {
     clip-path: ellipse(40px 50px at 50px 50px);
     display: block;
+}
+
+.flex {
+    display: flex;
 }
