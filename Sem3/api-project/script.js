@@ -3,8 +3,6 @@ import { manageCompoersFetchingState, renderComposers } from "./composers.js";
 
 
 
-
-
 // the initial load and setup happens here
 
 const dropdown = document.getElementById('dropdown')
@@ -19,6 +17,3 @@ dropdown.value = ""
 
 // initial render
 renderComposers(await getComposers())
-
-
-

@@ -1,7 +1,8 @@
-import { manageDetailsFetchingState } from "./details.js"
+import { manageDetailsFetchingState, hideDetails } from "./details.js"
 import { getComposersByPeriod } from "./fetching.js"
-import { hideDetails } from "./details.js"
 
+
+// this file contains functions responsible for the composer sidebar (the area that at first takes up the full screen but then goes to the left side)
 
 
 /// creates a simple summary card for a composer
