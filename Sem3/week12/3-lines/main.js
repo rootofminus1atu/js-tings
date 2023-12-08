@@ -48,13 +48,26 @@ const zAxis = new THREE.Line(zAxisGeometry, zAxisMaterial)
 
 
 const geometry = new THREE.BoxGeometry(10, 10, 10);
-const material = new THREE.MeshBasicMaterial( { color: 0xff00ff } );
-const cube = new THREE.Mesh( geometry, material );
-
+const material = new THREE.MeshStandardMaterial({
+    color: 0xff00ff,
+    roughness: 0.7,
+    metalness: 0.5,
+});
+const cube = new THREE.Mesh(geometry, material);
 cube.position.set(20, 20, 20);
 
-
 scene.add(xAxis, yAxis, zAxis, cube);
+
+
+// Add ambient light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+// Add directional light
+const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
+directionalLight.position.set(50, 50, 50);
+scene.add(directionalLight);
+
 
 
 
