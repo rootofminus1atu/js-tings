@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+
+    <!-- Reference to the Bing Maps SDK -->
+    <script type='text/javascript'
+            src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=no' 
+            async defer></script>
+    
+            <script type='text/javascript'>
+                var map;
+                var directionsManager;
+        
+                function GetMap()
+                {
+                    map = new Microsoft.Maps.Map('#myMap', {});
+        
+                    //Load the directions module.
+                    Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function () {
+                        //Create an instance of the directions manager.
+                        directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+        
+                        //Create waypoints to route between.
+                        var seattleWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: 'Dublin' });
+                        directionsManager.addWaypoint(seattleWaypoint);
+        
+                        var workWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: 'Limerick' });
+                        directionsManager.addWaypoint(workWaypoint);
+
+                        var workWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: 'Cork' });
+                        directionsManager.addWaypoint(workWaypoint);
+        
+                        //Calculate directions.
+                        directionsManager.calculateDirections();
+                    });
+                }
+
+                
+                var viewingAerial = false
+
+                function toggleView() {
+                    console.log(viewingAerial)
+
+                    if (viewingAerial) {
+                        map.setView({
+                            mapTypeId: Microsoft.Maps.MapTypeId.road
+                        });
+                        viewingAerial = false
+                    } else {
+                        map.setView({
+                            mapTypeId: Microsoft.Maps.MapTypeId.aerial
+                        });
+                        viewingAerial = true
+                    }
+                }
+
+                function userLocation() {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var loc = new Microsoft.Maps.Location(
+                            position.coords.latitude,
+                            position.coords.longitude);
+
+                        //Add a pushpin at the user's location.
+                        var pin = new Microsoft.Maps.Pushpin(loc);
+                        map.entities.push(pin);
+
+                        //Center the map on the user's location.
+                        map.setView({ center: loc, zoom: 15 });
+                    });
+                }
+            </script>
+</head>
+<body>
+    <div id="myMap" style="position:relative;width:600px;height:400px;"></div>
+
+    <button onclick="toggleView()">Toggle Satellite View</button>
+    <button onclick="userLocation()">User Location</button>
+</body>
+</html>
