@@ -1,0 +1,16 @@
+.the-square {
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    border: 2px dashed blue;
+}
+
+.container {
+    border: 2px dashed red;
+}
+
+.for-squares {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
