@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>testing stuff</h1>
+
+    <form action="get">
+
+    </form>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8080');
+
+        ws.onopen = () => {
+            console.log('connected to ws server');
+        };
+
+        ws.onmessage = (event) => {
+            console.log('message from server:', event.data);
+        };
+
+        ws.onclose = () => {
+            console.log('disconnected from ws server');
+        };
+    </script>
+</body>
+</html>
