@@ -2,11 +2,32 @@ const WebSocket = require('ws');
 
 const wss = new WebSocket.Server({ port: 8080 });
 
-const clients = new Set();
+const clients = new Map()
 
 wss.on('connection', (ws) => {
     console.log('New client connected');
-    clients.add(ws);
+
+    const clientInfo = { 
+        ws: ws,
+        notifyEvenMinutes: true,
+        notifyOddMinutes: true
+    }
+
+    clients.set(ws, clientInfo);
+
+    ws.on('message', (message) => {
+        try {
+            console.log(message)
+            const data = JSON.parse(message.toString());
+            if (data.type === 'preferences') {
+                clientInfo.notifyEvenMinutes = data.notifyEvenMinutes;
+                clientInfo.notifyOddMinutes = data.notifyOddMinutes;
+                console.log('Updated client preferences:', clientInfo);
+            }
+        } catch (error) {
+            console.error('Error parsing message:', error);
+        }
+    })
 
     ws.on('close', () => {
         console.log('Client disconnected');
@@ -15,17 +36,27 @@ wss.on('connection', (ws) => {
 });
 
 const pollTask = () => {
-    const message = { text: "hello i polled!" };
-    console.log(`polled, notifying ${clients.size} people`)
+    const currentMinutes = new Date().getMinutes();
+    const isEvenMinute = currentMinutes % 2 === 0;
+    const message = {
+        text: isEvenMinute ? "It's an even minute!" : "It's an odd minute!",
+        even: isEvenMinute
+    };    
+    console.log(`polled, ${clients.size} people, even minute: ${isEvenMinute}`)
 
-    clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(message));
+    clients.forEach((clientInfo) => {
+        const { ws, notifyEvenMinutes, notifyOddMinutes } = clientInfo;
+
+        if (ws.readyState === WebSocket.OPEN) {
+            if ((isEvenMinute && notifyEvenMinutes) || (!isEvenMinute && notifyOddMinutes)) {
+                console.log(`notifying with ${message}`)
+                ws.send(JSON.stringify(message));
+            }
         }
     });
 };
 
-setInterval(pollTask, 5000);
+setInterval(pollTask, 10000);
 
 console.log('running on ws://localhost:8080');
 

@@ -4,28 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        .bar {
+            display: flex;
+            justify-content: start;
+            align-items: start;
+        }
+    </style>
 </head>
 <body>
     <h1>testing stuff</h1>
 
-    <form action="get">
+    <button id="even-btn">even</button>
+    <button id="odd-btn">odd</button>
+    <button id="both-btn">both</button>
+    <button id="neither-btn">neither</button>
 
-    </form>
+    <p id="status">status: </p>
+
+    <div class="bar">
+        <div style="padding: 1rem;" id="even-container">
+            <p>even</p>
+        </div>
+        <div style="padding: 1rem;" id="odd-container">
+            <p>odd</p>
+        </div>
+    </div>
+
+    
+    
 
     <script>
-        const ws = new WebSocket('ws://localhost:8080');
+        const ws = new WebSocket('ws://localhost:8080')
+
+        const updatePreferences = (notifyEvenMinutes, notifyOddMinutes) => {
+            const data = {
+                type: "preferences",
+                notifyEvenMinutes,
+                notifyOddMinutes
+            }
+            ws.send(JSON.stringify(data))
+            document.getElementById('status').textContent = `status: notifyEvenMinutes=${notifyEvenMinutes}, notifyOddMinutes=${notifyOddMinutes}`
+        }
+
+        document.getElementById('even-btn').addEventListener('click', () => {
+            updatePreferences(true, false)
+        })
+
+        document.getElementById('odd-btn').addEventListener('click', () => {
+            updatePreferences(false, true)
+        })
+
+        document.getElementById('both-btn').addEventListener('click', () => {
+            updatePreferences(true, true)
+        })
+
+        document.getElementById('neither-btn').addEventListener('click', () => {
+            updatePreferences(false, false)
+        })
 
         ws.onopen = () => {
-            console.log('connected to ws server');
-        };
+            console.log('connected to ws server')
+        }
 
         ws.onmessage = (event) => {
-            console.log('message from server:', event.data);
-        };
+            console.log('message from server:', event.data)
+            const { text, even } = JSON.parse(event.data)
+
+            const p = document.createElement('p')
+            p.textContent = text
+
+            if (even) {
+                document.getElementById('even-container').appendChild(p)
+            } else {
+                document.getElementById('odd-container').appendChild(p)
+            }
+        }
 
         ws.onclose = () => {
-            console.log('disconnected from ws server');
-        };
+            console.log('disconnected from ws server')
+        }
     </script>
 </body>
 </html>
