@@ -1,0 +1,1 @@
+- to run a standalone ts file `px ts-node src/file.ts` or whatever it's named
